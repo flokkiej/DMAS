@@ -1,6 +1,8 @@
+#!/usr/bin/python
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
+from random import randint
 
 class agent(object):
 	"""docstring for agent"""
@@ -10,7 +12,7 @@ class agent(object):
 	def out(self):
 		sys.stdout.write(self.char)
 		sys.stdout.write(' ')
-		
+
 
 class grid(object):
 	"""docstring for grid"""
@@ -18,14 +20,16 @@ class grid(object):
 		super(grid, self).__init__()
 		self.size = gridSize
 		self.initGrid()
+		self.emotions = ['x', 'o', '+', '-']
 	def returnSize(self):
 		return self.size
 	def initGrid(self):
-		self.grid = [[0 for x in xrange(self.size)] for x in xrange(self.size)] 
+		self.grid = [[0 for x in xrange(self.size)] for x in xrange(self.size)]
 	def fillGrid(self):
 		for i in xrange(self.size):
 			for j in xrange(self.size):
-				self.grid[i][j] = agent('a')
+				emotion = randint(0, len(self.emotions)-1)
+				self.grid[i][j] = agent(self.emotions[emotion])
 	def printGrid(self):
 		for i in xrange(self.size):
 			for j in xrange(self.size):
@@ -34,12 +38,11 @@ class grid(object):
 
 def main():
 
-	gridSize = 10
+	gridSize = int(raw_input("Grid size? --> "))
 	g = grid(gridSize)
 	g.fillGrid()
 	g.printGrid()
 	return 
-
+	
 if __name__ == "__main__":
 	main()
-
