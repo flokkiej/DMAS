@@ -1,4 +1,6 @@
 import sys
+import numpy as np
+import matplotlib.pyplot as plt
 
 class agent(object):
 	"""docstring for agent"""
@@ -36,13 +38,7 @@ def main():
 	g = grid(gridSize)
 	g.fillGrid()
 	g.printGrid()
-#	printGrid(grid, gridSize)
 	return 
-
-def printGrid(grid, gridSize):
-
-	return
-
 
 if __name__ == "__main__":
 	main()
