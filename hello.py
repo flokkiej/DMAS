@@ -35,6 +35,8 @@ class grid(object):
 			for j in xrange(self.size):
 				self.grid[i][j].out()
 			print "\n"
+	def plotGrid(self):
+		
 
 def main():
 
@@ -42,7 +44,8 @@ def main():
 	g = grid(gridSize)
 	g.fillGrid()
 	g.printGrid()
+
 	return 
-	
+
 if __name__ == "__main__":
 	main()
