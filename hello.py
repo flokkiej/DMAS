@@ -40,12 +40,13 @@ class grid(object):
 
 def main():
 
-	gridSize = int(raw_input("Grid size? --> "))
+	gridSize = int(sys.argv[1]) if len(sys.argv)>1 else 15
+	print "Grid size: %d\n" % gridSize
 	g = grid(gridSize)
 	g.fillGrid()
 	g.printGrid()
 
-	return 
+	return
 
 if __name__ == "__main__":
 	main()
