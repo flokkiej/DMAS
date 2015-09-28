@@ -1,0 +1,83 @@
+\documentclass[a4paper]{article}
+\usepackage{a4wide}
+\usepackage[english]{babel}
+\usepackage{hyperref}
+% \usepackage{enumitem}
+%Bibliography
+\usepackage{csquotes}
+\usepackage[backend=biber, bibencoding=utf8]{biblatex}
+\bibliography{biblio}
+%Code
+\usepackage{listings}
+% \usepackage{color}
+
+%Images
+\usepackage{graphicx}
+\usepackage{epstopdf}
+% \epstopdfsetup{outdir=./images}
+\usepackage[normalsize,bf]{caption}
+\usepackage{subcaption}
+
+% TODOs
+\usepackage{todonotes}
+
+% Code lay-out
+\definecolor{light-gray}{gray}{0.95}
+\usepackage{courier}
+\lstset{language=Matlab, 
+	tabsize = 4, 
+	columns=flexible, 
+	breaklines = true, 
+	backgroundcolor=\color{light-gray},
+	keepspaces=true,
+	showspaces=false,
+	showstringspaces=false,
+	basicstyle=\ttfamily\scriptsize
+}
+
+%Math
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+
+
+\usepackage{enumerate}
+
+
+
+\renewcommand{\vec}[1]{\ensuremath{\mathbf{#1}}}
+\renewcommand{\t}[1]{\lstinline[breaklines=true, basicstyle=\ttfamily\normalsize]{#1}}
+
+\newcommand*{\Value}{\frac{1}{2}x^2}%
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}%
+% Make abs size dependent
+\makeatletter
+\let\oldabs\abs
+\def\abs{\@ifstar{\oldabs}{\oldabs*}}
+
+% Make norm size dependent
+\let\oldnorm\norm
+\def\norm{\@ifstar{\oldnorm}{\oldnorm*}}
+\makeatother
+
+\title{Design of Multi Agent Systems\\
+Emotion based Prisoners Dilemma}
+\author{Stefan Bussemaker (s2004674)\\Sybren R\"omer (s1974718)\\Folkert de Vries (s2029200)}
+
+\begin{document}
+
+\maketitle
+
+\section*{Introduction}
+\input{introduction.tex}
+\section*{Method}
+\input{method.tex}
+\section*{Results}
+\input{results.tex}
+\section*{Discussion}
+\input{discussion.tex}
+\printbibliography
+
+\end{document}
