@@ -28,6 +28,8 @@ class agent(object):
 				(0 <= x2 <= grid.returnSize) and
 				(0 <= y2 <= grid.returnSize))]
 		return neighbours(x,y)
+	def getEmotion(self, (x,y)):
+		return self.color
 
 
 class grid(object):
@@ -41,6 +43,8 @@ class grid(object):
 		self.cGrid = []
 	def returnSize(self):
 		return self.size
+	def getAgent(self, (i,j)):
+		return self.grid[i][j]
 	def initGrid(self):
 		self.grid = [[0 for x in xrange(self.size)] for x in xrange(self.size)]
 	def fillGrid(self):
@@ -63,7 +67,7 @@ class grid(object):
 		
 		self.cGrid = colorGrid
 
-		fig = plt.figure(1,(5,5))
+		fig = plt.figure(1,(7,7))
 		self.cmap = mpl.colors.ListedColormap(['blue','black','red', 'yellow'])
 		self.bounds=[-6,-3,0,3,6]
 		self.norm = mpl.colors.BoundaryNorm(self.bounds, self.cmap.N)
@@ -86,8 +90,26 @@ class grid(object):
 			randGrid = [[random.random()*(20)-10 for x in xrange(self.size)] for x in xrange(self.size)]
 			time.sleep(.5)
 			self.updatePlot(randGrid)
+'''
+	def play(self, (x,y)):
+		me = self.getAgent((x,y))
+		neighbours = me.returnNeighbours()
+		#nPlays = len(neighbours)-1
+		for x, y in neighbours:
+			opponent = self.getAgent((x,y))
+			(me_score,opp_score) = self.pd(me,opponent)
+		return
 
+	def pd(self,me,opponent):
+		me_score = 0
+		opp_score = 10
+		return (me_score, opp_score)
+	def desirability(self,me):
+	return
 
+	def praiseworthyness(self, me, other):
+	return
+'''
 
 def main():
 	gridSize = int(sys.argv[1]) if len(sys.argv)>1 else 15
@@ -97,6 +119,8 @@ def main():
 	plt.ion()
 	g.plotGrid()
 	g.simulate(50)
+	pl.ioff()
+	#g.play((1,1))
 	return
 
 if __name__ == "__main__":
