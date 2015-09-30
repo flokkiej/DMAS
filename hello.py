@@ -6,7 +6,23 @@ import matplotlib as mpl
 import time
 import random
 
-pd_payoff = [[7,0], [10,0]]
+pd_payoff = [[(3,3), (5,0)], [(0,5), (1,1)]]
+
+
+def desirability(me):
+	lastscore = me.lastRound
+	emotion = me.returnEmotion()
+	D = lastscore - 2
+	return D
+
+def praiseworthyness(me, other):
+	me_emo = me.returnEmotion()
+	other_emo = other.returnEmotion()
+	return
+
+
+
+
 
 class agent(object):
 	"""docstring for agent"""
@@ -15,9 +31,19 @@ class agent(object):
 		#self.char = char
 		self.color = color
 		self.coords = (x,y)
+		# Joy, Anger
+		self.emotions = ['Joy', 'Anger']
+		self.thresholds = [1,1]
+		self.lastRound = 0
+		self.points = 0
+		#self.neighbours = self.returnNeighbours2(self.size)
+		self.lastAction = 0
+		self.action = random.randint(0,1)
+
 	def out(self):
-		sys.stdout.write(self.char)
+		sys.stdout.write((str) (self.color))
 		sys.stdout.write(' ')
+	'''
 	def returnNeighbours(self):
 		(x,y) = self.coords
 		neighbours = lambda x, y :[(x2, y2) for x2 in range(x-1, x+2)
@@ -28,9 +54,28 @@ class agent(object):
 				(0 <= x2 <= grid.returnSize) and
 				(0 <= y2 <= grid.returnSize))]
 		return neighbours(x,y)
-	def getEmotion(self, (x,y)):
-		return self.color
+	'''
+	def returnNeighbours2(self,size):
+		size = size-1
+		(x,y) = self.coords
+		if (x == 0 and y<size):
+			return [(0,y+1),(1,y+1),(1,y)]
+		if (x == size and y==size):
+			return []
+		if (x == size and y<size):
+			return [(x, y+1)]
+		if (y == size and x<size):
+			return [(x+1,y-1),(x+1,y)]
+		return [(x,y+1),(x+1,y+1),(x+1,y),(x+1,y-1)]
 
+	def getColor(self, (x,y)):
+		return self.color
+	def returnEmotion(self):
+		return self.emotions
+	def returnLastPDround(self):
+		return self.lastRound
+	def returnPoints(self):
+		return self.points
 
 class grid(object):
 	"""docstring for grid"""
@@ -39,7 +84,7 @@ class grid(object):
 		self.size = gridSize
 		self.initGrid()
 		#self.emotions = ['x', 'o', '+', '-']
-		self.color = [-10, -1, 1, 10]
+		self.color = [-10, 10]
 		self.cGrid = []
 	def returnSize(self):
 		return self.size
@@ -79,37 +124,68 @@ class grid(object):
 		plt.show()
 		return
 
-	def updatePlot(self,randGrid):
-		img = plt.imshow(randGrid, interpolation = 'nearest', cmap = self.cmap, norm = self.norm)
+	def updatePlot(self,grid):
+		colorGrid = [[0 for x in xrange(self.size)] for x in xrange(self.size)]
+		for i in xrange(self.size):
+			for j in xrange(self.size):
+				colorGrid[i][j] = self.grid[i][j].color
+		
+		#cGrid = colorGrid
+		img = plt.imshow(colorGrid, interpolation = 'nearest', cmap = self.cmap, norm = self.norm)
 		plt.draw()
 		return
 
 	def simulate(self, N):
 		for i in xrange(N):
 			#print random colors 
-			randGrid = [[random.random()*(20)-10 for x in xrange(self.size)] for x in xrange(self.size)]
+			#randGrid = [[random.random()*(20)-10 for x in xrange(self.size)] for x in xrange(self.size)]
 			time.sleep(.5)
-			self.updatePlot(randGrid)
-'''
+			newGrid = self.grid
+			#print(self.size)
+			for i in xrange(self.size):
+				for j in xrange(self.size):
+					newGrid[i][j] = self.play((i,j))
+			self.grid = newGrid
+			self.updatePlot(newGrid)
+			#print self.grid[13][14].returnNeighbours2(15)
+			#print "score: " + str(self.grid[14][14].score) + " action: " + str(self.grid[14][14].action)
+
 	def play(self, (x,y)):
 		me = self.getAgent((x,y))
-		neighbours = me.returnNeighbours()
+		neighbours = me.returnNeighbours2(self.size)
+		#print neighbours
+		#self.printGrid()
 		#nPlays = len(neighbours)-1
-		for x, y in neighbours:
+		sum = 0
+		for (x, y) in neighbours:
+			#print x, y
 			opponent = self.getAgent((x,y))
-			(me_score,opp_score) = self.pd(me,opponent)
-		return
+			self.pd(me,opponent)
+		return me
 
 	def pd(self,me,opponent):
-		me_score = 0
-		opp_score = 10
-		return (me_score, opp_score)
-	def desirability(self,me):
-	return
+		act1 = me.action
+		act2 = opponent.action
+		(me_score, opp_score) = pd_payoff[act1][act2]
 
-	def praiseworthyness(self, me, other):
-	return
-'''
+		#Implement PD based on Emotions here (probably)
+		me.points = me.points +me_score
+		opponent.score = opponent.points + opp_score
+		swp = me.action
+		me.action = opponent.action
+		me.color = me.points
+		opponent.action = me.action
+		opponent.color = opponent.points
+
+
+		return (me_score, opp_score)
+
+	def getDesirability(self,me):
+		return desirability(me)
+
+	def getPraiseworthyness(self, me, other):
+		return praiseworthyness(me,other)
+
 
 def main():
 	gridSize = int(sys.argv[1]) if len(sys.argv)>1 else 15
@@ -119,8 +195,10 @@ def main():
 	plt.ion()
 	g.plotGrid()
 	g.simulate(50)
-	pl.ioff()
-	#g.play((1,1))
+	plt.ioff()
+	#g.play((14,1))
+	#a = agent(10, (15,15))
+	#print a.returnNeighbours2(15)
 	return
 
 if __name__ == "__main__":
