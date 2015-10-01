@@ -99,12 +99,12 @@ class grid(object):
 		(me_score, opp_score) = pd_payoff[act1][act2]
 
 		#Implement PD based on Emotions here (probably)
-		me.points = me.points +me_score
-		opponent.score = opponent.points + opp_score
+		me.points = me_score
+		opponent.score = opp_score
 		swp = me.action
 		me.action = opponent.action
 		me.color = me.points
-		opponent.action = me.action
+		opponent.action = swp
 		opponent.color = opponent.points
 
 
