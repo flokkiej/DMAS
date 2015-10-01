@@ -1,3 +1,11 @@
+import random
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+import time
+from agent import *
+
+pd_payoff = [[(3,3), (5,0)], [(0,5), (1,1)]]
+
 
 class grid(object):
 	"""docstring for grid"""

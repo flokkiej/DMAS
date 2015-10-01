@@ -1,3 +1,4 @@
+import random
 
 class agent(object):
 	"""docstring for agent"""

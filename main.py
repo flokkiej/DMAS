@@ -1,15 +1,10 @@
 #!/usr/bin/python
 import sys
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-import time
 import random
 
-import emotion, agent, grid
-
-pd_payoff = [[(3,3), (5,0)], [(0,5), (1,1)]]
-
+import emotion, grid
+from grid import *
 
 
 def main():
