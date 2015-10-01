@@ -63,6 +63,7 @@ class grid(object):
 		#cGrid = colorGrid
 		img = plt.imshow(colorGrid, interpolation = 'nearest', cmap = self.cmap, norm = self.norm)
 		plt.draw()
+		#plt.savefig('sim.pdf')
 		return
 
 	def simulate(self, N):
