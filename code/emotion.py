@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import agent
 
 def desirability(me):
 	lastscore = me.lastRound
@@ -10,3 +11,5 @@ def praiseworthyness(me, other):
 	me_emo = me.returnEmotion()
 	other_emo = other.returnEmotion()
 	return
+
+

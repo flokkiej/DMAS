@@ -14,7 +14,7 @@ class grid(object):
 		self.size = gridSize
 		self.initGrid()
 		#self.emotions = ['x', 'o', '+', '-']
-		self.color = [-10, 10]
+		self.color = [0, 10]
 		self.cGrid = []
 	def returnSize(self):
 		return self.size
@@ -23,12 +23,14 @@ class grid(object):
 	def initGrid(self):
 		self.grid = [[0 for x in xrange(self.size)] for x in xrange(self.size)]
 	def fillGrid(self):
+		# fills grid with agents
 		for i in xrange(self.size):
 			for j in xrange(self.size):
+				#create agents with a random color(emo) and give him his location (x,y)				
 				randI = random.randint(0, len(self.color)-1)
 				self.grid[i][j] = agent(self.color[randI], (i,j))
-				#self.grid[i][j] = agent(self.emotions[randI], self.color[randI], (i,j))
 	def printGrid(self):
+		# redundant.
 		for i in xrange(self.size):
 			for j in xrange(self.size):
 				self.grid[i][j].out()
@@ -40,16 +42,16 @@ class grid(object):
 			for j in xrange(self.size):
 				colorGrid[i][j] = self.grid[i][j].color
 		
-		self.cGrid = colorGrid
+		cGrid = colorGrid
 
 		fig = plt.figure(1,(7,7))
 		self.cmap = mpl.colors.ListedColormap(['blue','black','red', 'yellow'])
-		self.bounds=[-6,-3,0,3,6]
-		self.norm = mpl.colors.BoundaryNorm(self.bounds, self.cmap.N)
-		img = plt.imshow(self.cGrid, interpolation = 'nearest', cmap = self.cmap, norm = self.norm)
+		bounds=[-6,-3,0,3,6]
+		self.norm = mpl.colors.BoundaryNorm(bounds, self.cmap.N)
+		img = plt.imshow(cGrid, interpolation = 'nearest', cmap = self.cmap, norm = self.norm)
 
 		# make a color bar
-		plt.colorbar(img,cmap=self.cmap, norm=self.norm, boundaries = self.bounds,ticks = [-5,0,5])
+		plt.colorbar(img,cmap=self.cmap, norm=self.norm, boundaries = bounds,ticks = [-5,0,5])
 		plt.draw()
 		plt.show()
 		return
@@ -60,46 +62,41 @@ class grid(object):
 			for j in xrange(self.size):
 				colorGrid[i][j] = self.grid[i][j].color
 		
-		#cGrid = colorGrid
 		img = plt.imshow(colorGrid, interpolation = 'nearest', cmap = self.cmap, norm = self.norm)
 		plt.draw()
 		#plt.savefig('sim.pdf')
 		return
 
 	def simulate(self, N):
+		# calculate the IPD and update plot for N epochs
 		for i in xrange(N):
-			#print random colors 
-			#randGrid = [[random.random()*(20)-10 for x in xrange(self.size)] for x in xrange(self.size)]
 			time.sleep(.5)
 			newGrid = self.grid
-			#print(self.size)
 			for i in xrange(self.size):
 				for j in xrange(self.size):
 					newGrid[i][j] = self.play((i,j))
 			self.grid = newGrid
 			self.updatePlot(newGrid)
-			#print self.grid[13][14].returnNeighbours2(15)
-			#print "score: " + str(self.grid[14][14].score) + " action: " + str(self.grid[14][14].action)
+		return
 
 	def play(self, (x,y)):
+		# For each agent play against all (relevant) neighbouring opponents
 		me = self.getAgent((x,y))
-		neighbours = me.returnNeighbours2(self.size)
-		#print neighbours
-		#self.printGrid()
-		#nPlays = len(neighbours)-1
+		neighbours = me.returnNeighbours(self.size)
 		sum = 0
 		for (x, y) in neighbours:
-			#print x, y
 			opponent = self.getAgent((x,y))
 			self.pd(me,opponent)
 		return me
 
 	def pd(self,me,opponent):
+		#Implement PD based on Emotions here (probably)
+
 		act1 = me.action
 		act2 = opponent.action
 		(me_score, opp_score) = pd_payoff[act1][act2]
 
-		#Implement PD based on Emotions here (probably)
+		
 		me.points = me_score
 		opponent.score = opp_score
 		swp = me.action
