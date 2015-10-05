@@ -45,8 +45,8 @@ class grid(object):
 		cGrid = colorGrid
 
 		fig = plt.figure(1,(7,7))
-		self.cmap = mpl.colors.ListedColormap(['blue','black','red', 'yellow'])
-		bounds=[-6,-3,0,3,6]
+		self.cmap = mpl.colors.ListedColormap(['red', 'yellow'])
+		bounds=[0,3,6]
 		self.norm = mpl.colors.BoundaryNorm(bounds, self.cmap.N)
 		img = plt.imshow(cGrid, interpolation = 'nearest', cmap = self.cmap, norm = self.norm)
 
