@@ -60,7 +60,6 @@ class grid(object):
 		plt.colorbar(img,cmap=self.cmap, norm=self.norm, boundaries = bounds,ticks = [-5,0,5])
 		plt.draw()
 		plt.show()
-		return
 
 	def updatePlot(self,grid):
 		plt.figure(1)
@@ -72,14 +71,14 @@ class grid(object):
 		img = plt.imshow(colorGrid, interpolation = 'nearest', cmap = self.cmap, norm = self.norm)
 		plt.draw()
 		#plt.savefig('sim.pdf')
-		return
 
 	def plotRate(self):
 		fig = plt.figure(2,(7,7))
 		#plt.plot()
+		plt.xlabel('Epoch')
+		plt.ylabel('Mutual cooperation rate')
 		plt.draw()
 		plt.show()
-		return
 
 	def updateRateplot(self,rate, x):
 		plt.figure(2)
@@ -98,7 +97,7 @@ class grid(object):
 		for n in xrange(N):
 			self.cooprate = 0
 			self.Nactions = 0
-			time.sleep(.5)
+			#time.sleep(.5)
 			newGrid = self.grid
 			for i in xrange(self.size):
 				for j in xrange(self.size):
@@ -106,19 +105,25 @@ class grid(object):
 			self.grid = newGrid
 			self.updatePlot(newGrid)
 			self.updateRateplot((self.cooprate/float(self.Nactions)),n)
-#			print self.cooprate
-#			print self.Nactions
 
-		return
 
 	def play(self, (x,y)):
 		# For each agent play against all (relevant) neighbouring opponents
 		me = self.getAgent((x,y))
 		neighbours = me.returnNeighbours(self.size)
-		sum = 0
 		for (x, y) in neighbours:
 			opponent = self.getAgent((x,y))
 			self.pd(me,opponent)
+		print me.hist
+		#give agent predominent color
+		length = len(me.hist)
+		c = sum(me.hist)
+		# sum is amount of defectors. 
+		if c < (length/2):
+			me.color = 10
+		else:
+			me.color = 0
+		me.hist = []
 		return me
 
 	def pd(self,me,opponent):
@@ -130,12 +135,15 @@ class grid(object):
 
 		
 		me.points = me_score
-		opponent.score = opp_score
+		opponent.points = opp_score
+		me.hist.append(me.action)
+		opponent.hist.append(opponent.action)
 		swp = me.action
 		me.action = opponent.action
-		me.color = me.points
+		#me.color = me.points
 		opponent.action = swp
-		opponent.color = opponent.points
+		#opponent.color = opponent.points
+		
 		if me.action == 0 and opponent.action == 0:
 			self.cooprate = self.cooprate +1
 		self.Nactions = self.Nactions +1

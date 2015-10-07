@@ -13,6 +13,7 @@ class agent(object):
 		self.points = 0
 		self.lastAction = 0
 		self.neighbours = []
+		self.hist = []
 		self.action = random.randint(0,1)
 
 	def out(self):
