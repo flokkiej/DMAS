@@ -13,6 +13,7 @@ def main():
 	g.fillGrid()
 	plt.ion()
 	g.plotGrid()
+	g.plotRate()
 	g.simulate(50)
 	plt.ioff()
 	return

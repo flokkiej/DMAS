@@ -2,6 +2,7 @@ import random
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import time
+import numpy as np
 from agent import *
 
 pd_payoff = [[(3,3), (5,0)], [(0,5), (1,1)]]
@@ -16,6 +17,11 @@ class grid(object):
 		#self.emotions = ['x', 'o', '+', '-']
 		self.color = [0, 10]
 		self.cGrid = []
+		self.cooprate = 0
+		self.pltcooprate = []
+		self.pltx = []
+		self.Nactions = 0
+
 	def returnSize(self):
 		return self.size
 	def getAgent(self, (i,j)):
@@ -57,6 +63,7 @@ class grid(object):
 		return
 
 	def updatePlot(self,grid):
+		plt.figure(1)
 		colorGrid = [[0 for x in xrange(self.size)] for x in xrange(self.size)]
 		for i in xrange(self.size):
 			for j in xrange(self.size):
@@ -67,9 +74,30 @@ class grid(object):
 		#plt.savefig('sim.pdf')
 		return
 
+	def plotRate(self):
+		fig = plt.figure(2,(7,7))
+		#plt.plot()
+		plt.draw()
+		plt.show()
+		return
+
+	def updateRateplot(self,rate, x):
+		plt.figure(2)
+#		print self.pltx
+#		print self.pltcooprate
+		self.pltx.append(x)
+		self.pltcooprate.append(rate)
+		xspace = np.array(self.pltx)
+		yspace = np.array(self.pltcooprate)
+		plt.plot(xspace,yspace)
+		plt.draw()
+
+
 	def simulate(self, N):
 		# calculate the IPD and update plot for N epochs
-		for i in xrange(N):
+		for n in xrange(N):
+			self.cooprate = 0
+			self.Nactions = 0
 			time.sleep(.5)
 			newGrid = self.grid
 			for i in xrange(self.size):
@@ -77,6 +105,10 @@ class grid(object):
 					newGrid[i][j] = self.play((i,j))
 			self.grid = newGrid
 			self.updatePlot(newGrid)
+			self.updateRateplot((self.cooprate/float(self.Nactions)),n)
+#			print self.cooprate
+#			print self.Nactions
+
 		return
 
 	def play(self, (x,y)):
@@ -104,8 +136,9 @@ class grid(object):
 		me.color = me.points
 		opponent.action = swp
 		opponent.color = opponent.points
-
-
+		if me.action == 0 and opponent.action == 0:
+			self.cooprate = self.cooprate +1
+		self.Nactions = self.Nactions +1
 		return (me_score, opp_score)
 
 	def getDesirability(self,me):
