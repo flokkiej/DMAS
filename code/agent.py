@@ -1,48 +1,45 @@
-import random
+import random, itertools, config
 
 class agent(object):
-	"""docstring for agent"""
-	def __init__(self, color, (x,y)):
-		super(agent, self).__init__()
-		self.color = color
+	def __init__(self, initialStatus, (x,y)):
 		self.coords = (x,y)
-		# Joy, Anger
-		self.emotions = ['Joy', 'Anger']
-		self.thresholds = [1,1]
-		self.lastRound = 0
+		self.status = initialStatus
+		self.neighbours = self.meetNeighbours()
 		self.points = 0
-		self.lastAction = 0
-		self.neighbours = []
-		self.hist = []
-		self.action = random.randint(0,1)
+		self.emotion = None
+		self.group = None
 
-	def out(self):
-		sys.stdout.write((str) (self.color))
-		sys.stdout.write(' ')
+	def meetNeighbours(self):
+		# Returns all neighbouring agents
+		neighbours = []
+		(x,y) = self.coords
 
-	def returnNeighbours(self,size):
-		# Returns only neighbours towards NE,E,SE and S
-		# For sake of the algorithm
-		if self.neighbours == []:
-			size = size-1
-			(x,y) = self.coords
-			if (x == 0 and y<size):
-				return [(0,y+1),(1,y+1),(1,y)]
-			if (x == size and y==size):
-				return []
-			if (x == size and y<size):
-				return [(x, y+1)]
-			if (y == size and x<size):
-				return [(x+1,y-1),(x+1,y)]
-			return [(x,y+1),(x+1,y+1),(x+1,y),(x+1,y-1)]
-		else:
-			return self.neighbours
+		# Define the xrange and yrange for coord
+		a = [x-1, x, x+1]
+		b = [y-1, y, y+1]
 
-	def getColor(self, (x,y)):
-		return self.color
-	def returnEmotion(self):
-		return self.emotions
-	def returnLastPDround(self):
-		return self.lastRound
-	def returnPoints(self):
+		# Clean up outside borders
+		a2 = [ x for x in a if x >= 0 and x < config.gridSize ]
+		b2 = [ y for y in b if y >= 0 and y < config.gridSize ]
+
+		# Get all permutations
+		neighbours = list(itertools.product(a2,b2))
+
+		# You're not your own neighbour, silly!
+		neighbours.remove(self.coords)
+		return neighbours
+
+	def getNeighbours(self):
+		return self.neighbours
+
+	def getStatus(self):
+		return self.status
+
+	def getEmotion(self):
+		return self.emotion
+
+	def getPoints(self):
 		return self.points
+
+	def getGroup(self):
+		return self.group

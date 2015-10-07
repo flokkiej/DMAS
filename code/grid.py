@@ -1,53 +1,33 @@
-import random
+import random, config, sys
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-import time
 import numpy as np
+import emotion
 from agent import *
 
-pd_payoff = [[(3,3), (5,0)], [(0,5), (1,1)]]
-
-
 class grid(object):
-	"""docstring for grid"""
-	def __init__(self, gridSize):
-		super(grid, self).__init__()
-		self.size = gridSize
-		self.initGrid()
-		#self.emotions = ['x', 'o', '+', '-']
-		self.color = [0, 10]
+	def __init__(self):
+		self.size = config.gridSize
+		self.status = ['C', 'D']
 		self.cGrid = []
-		self.cooprate = 0
-		self.pltcooprate = []
-		self.pltx = []
-		self.Nactions = 0
+		self.coopRate = [None] * config.epochs # Allocate space for performance
+		self.initGrid()
 
-	def returnSize(self):
-		return self.size
 	def getAgent(self, (i,j)):
 		return self.grid[i][j]
+
 	def initGrid(self):
 		self.grid = [[0 for x in xrange(self.size)] for x in xrange(self.size)]
-	def fillGrid(self):
-		# fills grid with agents
+		# fill grid with agents
 		for i in xrange(self.size):
 			for j in xrange(self.size):
-				#create agents with a random color(emo) and give him his location (x,y)				
-				randI = random.randint(0, len(self.color)-1)
-				self.grid[i][j] = agent(self.color[randI], (i,j))
-	def printGrid(self):
-		# redundant.
-		for i in xrange(self.size):
-			for j in xrange(self.size):
-				self.grid[i][j].out()
-			print "\n"
+				#create agents with a random status (action) and give him his location (x,y)
+				randI = 0 if random.random() < config.initialCoopRate else 1
+				self.grid[i][j] = agent(self.status[randI], (i,j))
+
 	def plotGrid(self):
 		#Colors are values
-		colorGrid = [[0 for x in xrange(self.size)] for x in xrange(self.size)]
-		for i in xrange(self.size):
-			for j in xrange(self.size):
-				colorGrid[i][j] = self.grid[i][j].color
-		
+		colorGrid = [[10 if self.grid[i][j].status == 'C' else 0 for j in xrange(self.size)] for i in xrange(self.size)]
 		cGrid = colorGrid
 
 		fig = plt.figure(1,(7,7))
@@ -63,94 +43,109 @@ class grid(object):
 
 	def updatePlot(self,grid):
 		plt.figure(1)
-		colorGrid = [[0 for x in xrange(self.size)] for x in xrange(self.size)]
-		for i in xrange(self.size):
-			for j in xrange(self.size):
-				colorGrid[i][j] = self.grid[i][j].color
-		
+		colorGrid = [[10 if self.grid[i][j].status == 'C' else 0 for j in xrange(self.size)] for i in xrange(self.size)]
 		img = plt.imshow(colorGrid, interpolation = 'nearest', cmap = self.cmap, norm = self.norm)
 		plt.draw()
 		#plt.savefig('sim.pdf')
 
-	def plotRate(self):
+	def plotResults(self):
 		fig = plt.figure(2,(7,7))
-		#plt.plot()
 		plt.xlabel('Epoch')
-		plt.ylabel('Mutual cooperation rate')
+		plt.ylabel('Cooperation rate')
+
+		xspace = np.array(range(config.epochs))
+		yspace = np.array(self.coopRate)
+		print self.coopRate
+
+		plt.plot(xspace,yspace)
 		plt.draw()
 		plt.show()
 
-	def updateRateplot(self,rate, x):
-		plt.figure(2)
-#		print self.pltx
-#		print self.pltcooprate
-		self.pltx.append(x)
-		self.pltcooprate.append(rate)
-		xspace = np.array(self.pltx)
-		yspace = np.array(self.pltcooprate)
-		plt.plot(xspace,yspace)
-		plt.draw()
+	def updateRateplot(self, rate, x):
+		print x, rate
+		self.coopRate[x] = rate
 
-
-	def simulate(self, N):
+	def simulate(self):
 		# calculate the IPD and update plot for N epochs
-		for n in xrange(N):
-			self.cooprate = 0
-			self.Nactions = 0
-			#time.sleep(.5)
+		for epoch in xrange(config.epochs):
+			print "Epoch: %d" % epoch
+			cooperators = [[self.getAgent((i,j)).status for j in xrange(self.size)] for i in xrange(self.size)]
+			cooperators = [[1 for x in cooperators for y in x if y == 'C']]
+			nCooperators = np.sum(cooperators)
+
+			# Step 1: Calculate the scores for each agent
+			scoreGrid = [[self.play((i,j)) for j in xrange(self.size)] for i in xrange(self.size)]
+
+			# Step 2: Determine winner for each square
 			newGrid = self.grid
 			for i in xrange(self.size):
 				for j in xrange(self.size):
-					newGrid[i][j] = self.play((i,j))
+					newGrid[i][j] = self.mostPoints((i,j))
+
+			# Step 3: Apply emotions
+			if config.emotions:
+				print "Adding drama"
+				for i in xrange(self.size):
+					for j in xrange(self.size):
+						me = self.getAgent((i,j))
+						neighbours = me.getNeighbours()
+						neighbours = [self.getAgent(coords) for coords in neighbours]
+						me.emotion = emotion.emotionize(me, neighbours)
+
+			# Step 4: Update status based on emotions
+			if config.emotions:
+				print "Changing actions based on emotions"
+				for i in xrange(self.size):
+					for j in xrange(self.size):
+						me = self.getAgent((i,j))
+						if me.emotion == 'Joy':
+							me.status = 'C'
+						elif me.emotion == 'Distress':
+							me.status = 'D'
+
+			# TODO
+			# Step 5: Update status based on group
+			if config.coalitions:
+				print "Coalitions may overrule your action now"
+
+			# Step 6: Plot and Log
 			self.grid = newGrid
-			self.updatePlot(newGrid)
-			self.updateRateplot((self.cooprate/float(self.Nactions)),n)
+			self.updatePlot(self.grid)
+			self.updateRateplot((nCooperators/float(config.nAgents)),epoch)
 
+	def play(self, coords):
+		# For each agent, play against all neighbouring opponents
+		score = 0
+		me = self.getAgent(coords)
+		neighbours = me.getNeighbours()
+		for coords in neighbours:
+			opponent = self.getAgent(coords)
+			score += self.pd(me,opponent)
 
-	def play(self, (x,y)):
-		# For each agent play against all (relevant) neighbouring opponents
-		me = self.getAgent((x,y))
-		neighbours = me.returnNeighbours(self.size)
-		for (x, y) in neighbours:
-			opponent = self.getAgent((x,y))
-			self.pd(me,opponent)
-		print me.hist
-		#give agent predominent color
-		length = len(me.hist)
-		c = sum(me.hist)
-		# sum is amount of defectors. 
-		if c < (length/2):
-			me.color = 10
-		else:
-			me.color = 0
-		me.hist = []
+		#print "Agent " + str(me.coords) + " scored %d points" % score
+		me.points = score
 		return me
 
-	def pd(self,me,opponent):
-		#Implement PD based on Emotions here (probably)
+	# each site is occupied by the agent scoring the highest
+	# total of points among the eight neighbours and the agent itself
+	def mostPoints(self, coords):
+		me = self.getAgent(coords)
+		highest_points = me.points
 
-		act1 = me.action
-		act2 = opponent.action
-		(me_score, opp_score) = pd_payoff[act1][act2]
+		neighbours = me.getNeighbours()
+		for coords in neighbours:
+			opponent = self.getAgent(coords)
+			if opponent.points > highest_points:
+				# print "%s got occupied to %s" % (me.status, opponent.status)
+				me.status = opponent.status
+				highest_points = opponent.points
+		return me
 
-		
-		me.points = me_score
-		opponent.points = opp_score
-		me.hist.append(me.action)
-		opponent.hist.append(opponent.action)
-		swp = me.action
-		me.action = opponent.action
-		#me.color = me.points
-		opponent.action = swp
-		#opponent.color = opponent.points
-		
-		if me.action == 0 and opponent.action == 0:
-			self.cooprate = self.cooprate +1
-		self.Nactions = self.Nactions +1
-		return (me_score, opp_score)
+	# Play the prisoner's dilemma
+	# pd_payoff = [[(0,0), (1.9,0)], [(0,1.9), (1,1)]]
+	def pd(self, me, opponent):
+		act1 = 1 if me.status == 'C' else 0
+		act2 = 1 if opponent.status == 'C' else 0
+		score = config.pd_payoff[act1][act2][0]
 
-	def getDesirability(self,me):
-		return emotion.desirability(me)
-
-	def getPraiseworthyness(self, me, other):
-		return emotion.praiseworthyness(me,other)
+		return score
