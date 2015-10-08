@@ -114,7 +114,6 @@ class grid(object):
 		for (x, y) in neighbours:
 			opponent = self.getAgent((x,y))
 			self.pd(me,opponent)
-		print me.hist
 		#give agent predominent color
 		length = len(me.hist)
 		c = sum(me.hist)
