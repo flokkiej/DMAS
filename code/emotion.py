@@ -16,7 +16,7 @@ def emotionize(me, neighbours):
 	if (me.points < config.y) or (n_neighbours_distress > config.x):
 		potential_distress = config.increment
 		if potential_distress > config.threshold_distress:
-			intensities['Joy'] = potential_distress - config.threshold_distress
+			intensities['Distress'] = potential_distress - config.threshold_distress
 
 	#return emotion with highest value
-	return None
+	return max(intensities, key=intensities.get)
