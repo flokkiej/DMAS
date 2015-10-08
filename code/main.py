@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 def main():
 	g = grid.grid()
 	plt.ion()
-	g.plotGrid()
 	g.simulate()
 	plt.ioff()
 	g.plotResults()

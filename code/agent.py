@@ -4,6 +4,7 @@ class agent(object):
 	def __init__(self, initialStatus, (x,y)):
 		self.coords = (x,y)
 		self.status = initialStatus
+		self.statusUpdate = None
 		self.neighbours = self.meetNeighbours()
 		self.points = 0
 		self.emotion = None

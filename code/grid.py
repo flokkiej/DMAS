@@ -9,15 +9,17 @@ class grid(object):
 	def __init__(self):
 		self.size = config.gridSize
 		self.status = ['C', 'D']
-		self.cGrid = []
 		self.coopRate = [None] * config.epochs # Allocate space for performance
+
+		self.grid = [[0 for x in xrange(self.size)] for x in xrange(self.size)]
 		self.initGrid()
+		self.plotGrid()
+		self.updatePlot(self.grid)
 
 	def getAgent(self, (i,j)):
 		return self.grid[i][j]
 
 	def initGrid(self):
-		self.grid = [[0 for x in xrange(self.size)] for x in xrange(self.size)]
 		# fill grid with agents
 		for i in xrange(self.size):
 			for j in xrange(self.size):
@@ -28,13 +30,12 @@ class grid(object):
 	def plotGrid(self):
 		#Colors are values
 		colorGrid = [[10 if self.grid[i][j].status == 'C' else 0 for j in xrange(self.size)] for i in xrange(self.size)]
-		cGrid = colorGrid
 
 		fig = plt.figure(1,(7,7))
 		self.cmap = mpl.colors.ListedColormap(['red', 'yellow'])
 		bounds=[0,3,6]
 		self.norm = mpl.colors.BoundaryNorm(bounds, self.cmap.N)
-		img = plt.imshow(cGrid, interpolation = 'nearest', cmap = self.cmap, norm = self.norm)
+		img = plt.imshow(colorGrid, interpolation = 'nearest', cmap = self.cmap, norm = self.norm)
 
 		# make a color bar
 		plt.colorbar(img,cmap=self.cmap, norm=self.norm, boundaries = bounds,ticks = [-5,0,5])
@@ -62,13 +63,13 @@ class grid(object):
 		plt.show()
 
 	def updateRateplot(self, rate, x):
-		print x, rate
 		self.coopRate[x] = rate
 
 	def simulate(self):
 		# calculate the IPD and update plot for N epochs
 		for epoch in xrange(config.epochs):
 			print "Epoch: %d" % epoch
+			raw_input("Press key to continue")
 			cooperators = [[self.getAgent((i,j)).status for j in xrange(self.size)] for i in xrange(self.size)]
 			cooperators = [[1 for x in cooperators for y in x if y == 'C']]
 			nCooperators = np.sum(cooperators)
@@ -108,8 +109,13 @@ class grid(object):
 			if config.coalitions:
 				print "Coalitions may overrule your action now"
 
-			# Step 6: Plot and Log
+			# Step 6: Update grid, Plot and Log
 			self.grid = newGrid
+			for i in xrange(self.size):
+				for j in xrange(self.size):
+					me = self.getAgent((i,j))
+					if not me.statusUpdate: pass
+					else: me.status = me.statusUpdate
 			self.updatePlot(self.grid)
 			self.updateRateplot((nCooperators/float(config.nAgents)),epoch)
 
@@ -122,7 +128,7 @@ class grid(object):
 			opponent = self.getAgent(coords)
 			score += self.pd(me,opponent)
 
-		#print "Agent " + str(me.coords) + " scored %d points" % score
+		print "Agent " + str(me.coords) + " played %s and scored %d points" % (me.status, score)
 		me.points = score
 		return me
 
@@ -130,6 +136,7 @@ class grid(object):
 	# total of points among the eight neighbours and the agent itself
 	def mostPoints(self, coords):
 		me = self.getAgent(coords)
+		me.statusUpdate = None
 		highest_points = me.points
 
 		neighbours = me.getNeighbours()
@@ -137,15 +144,15 @@ class grid(object):
 			opponent = self.getAgent(coords)
 			if opponent.points > highest_points:
 				# print "%s got occupied to %s" % (me.status, opponent.status)
-				me.status = opponent.status
+				me.statusUpdate = opponent.status
 				highest_points = opponent.points
 		return me
 
 	# Play the prisoner's dilemma
-	# pd_payoff = [[(0,0), (1.9,0)], [(0,1.9), (1,1)]]
 	def pd(self, me, opponent):
-		act1 = 1 if me.status == 'C' else 0
-		act2 = 1 if opponent.status == 'C' else 0
-		score = config.pd_payoff[act1][act2][0]
-
-		return score
+		if me.status == 'C':
+			if opponent.status == 'C': return config.R
+			else: return config.S
+		else:
+			if opponent.status == 'C': return config.T
+			else: return config.P
