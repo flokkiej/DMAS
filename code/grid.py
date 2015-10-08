@@ -102,8 +102,10 @@ class grid(object):
 					for j in xrange(self.size):
 						me = self.getAgent((i,j))
 						if me.emotion == 'Joy':
+							print "Joyful"
 							me.status = 'C'
 						elif me.emotion == 'Distress':
+							print "Distressed"
 							me.status = 'D'
 
 			# TODO
@@ -131,7 +133,7 @@ class grid(object):
 			opponent = self.getAgent(coords)
 			score += self.pd(me,opponent)
 
-		print "Agent " + str(me.coords) + " played %s and scored %d points" % (me.status, score)
+		# print "Agent " + str(me.coords) + " played %s and scored %d points" % (me.status, score)
 		me.points = score
 		return me
 

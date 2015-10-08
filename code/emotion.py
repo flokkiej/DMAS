@@ -19,4 +19,6 @@ def emotionize(me, neighbours):
 			intensities['Distress'] = potential_distress - config.threshold_distress
 
 	#return emotion with highest value
-	return max(intensities, key=intensities.get)
+	highest = max(intensities, key=intensities.get)
+	if intensities[highest] == 0: return None
+	else: return highest

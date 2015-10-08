@@ -8,7 +8,7 @@ class agent(object):
 		self.neighbours = self.meetNeighbours()
 		self.points = 0
 		self.emotion = None
-		self.group = None
+		self.coalition = None
 
 	def meetNeighbours(self):
 		# Returns all neighbouring agents
