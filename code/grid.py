@@ -13,8 +13,9 @@ class grid(object):
 
 		self.grid = [[0 for x in xrange(self.size)] for x in xrange(self.size)]
 		self.initGrid()
-		self.plotGrid()
-		self.updatePlot(self.grid)
+		if config.plot:
+			self.plotGrid()
+			self.updatePlot(self.grid)
 
 	def getAgent(self, (i,j)):
 		return self.grid[i][j]
@@ -69,7 +70,8 @@ class grid(object):
 		# calculate the IPD and update plot for N epochs
 		for epoch in xrange(config.epochs):
 			print "Epoch: %d" % epoch
-			raw_input("Press key to continue")
+			if config.plot:
+				raw_input("Press key to continue")
 			cooperators = [[self.getAgent((i,j)).status for j in xrange(self.size)] for i in xrange(self.size)]
 			cooperators = [[1 for x in cooperators for y in x if y == 'C']]
 			nCooperators = np.sum(cooperators)
@@ -116,7 +118,8 @@ class grid(object):
 					me = self.getAgent((i,j))
 					if not me.statusUpdate: pass
 					else: me.status = me.statusUpdate
-			self.updatePlot(self.grid)
+			if config.plot:
+				self.updatePlot(self.grid)
 			self.updateRateplot((nCooperators/float(config.nAgents)),epoch)
 
 	def play(self, coords):
