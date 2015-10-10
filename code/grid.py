@@ -87,7 +87,7 @@ class grid(object):
 		# calculate the IPD and update plot for N epochs
 		for epoch in xrange(config.epochs):
 			print "\nEpoch: %d" % epoch
-			self.emotions = {'Joy': 0, 'Distress': 0, 'Anger': 0, 'Pity': 0}
+			self.emotions = {'Joy': 0, 'Distress': 0, 'Anger': 0, 'Pity': 0, None: 0}
 
 			# Calc number of cooperators
 			cooperators = [[self.getAgent((i,j)).status for j in xrange(self.size)] for i in xrange(self.size)]
@@ -129,13 +129,13 @@ class grid(object):
 					for j in xrange(self.size):
 						me = self.getAgent((i,j))
 						if me.emotion == 'Joy':
-							me.status = 'C'
+							me.statusUpdate = 'C'
 						elif me.emotion == 'Distress':
-							me.status = 'D'
+							me.statusUpdate = 'D'
 						elif me.emotion == 'Pity':
-							me.status = 'C'
+							me.statusUpdate = 'C'
 						elif me.emotion == 'Anger':
-							me.status = 'D'
+							me.statusUpdate = 'D'
 						self.setAgent((i,j), me)
 
 			# TODO

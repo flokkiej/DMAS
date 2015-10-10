@@ -1,21 +1,21 @@
 # Global variables
-gridSize            = 400
+gridSize            = 30
 nAgents             = gridSize * gridSize
-epochs              = 300
+epochs              = 100
 initialCoopRate     = 0.75
 
 plot                = False
-emotions            = False
+emotions            = True
 coalitions          = False
 
-# Local varialbes
+# Local variables
 x                   = 3
 y                   = 9
 increment           = 1
-threshold_joy       = 0.1
-threshold_anger     = 0.8
-threshold_pity      = 0.7
-threshold_distress  = 0.9
+threshold_joy       = 0
+threshold_anger     = 6
+threshold_pity      = 7
+threshold_distress  = 0.5
 
 # Prisoner's Dilemma Payoff
 T                   = 1.9    # Triump

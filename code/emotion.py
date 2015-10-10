@@ -22,23 +22,25 @@ def emotionize(me, neighbours):
 
 	# Rule for Anger
 	#	IF player has not collected at least y points AND opponent has defected
-	defector = False
-	for i in xrange(len(neighbours)):
-		if neighbours[i].status == 'D': defector = True
-	if (me.points < config.y) and defector:
-		potential_anger = config.increment
+	#	Each D neighbour contributes to potential_anger individually
+	#	This way, the more neighbours Deflect, the more potential is generated
+	if (me.points < config.y):
+		potential_anger = 0
+		for i in xrange(len(neighbours)):
+			if neighbours[i].status == 'D':
+				potential_anger += config.increment
 		if potential_anger > config.threshold_anger:
 			intensities['Anger'] = potential_anger - config.threshold_anger
 
 	# Rule for Pity
 	#	IF neighbour has not collected at least y points
-	low_scorer = False
+	potential_pity = 0
 	for i in xrange(len(neighbours)):
-		if neighbours[i].points < config.y: low_scorer = True
-	if low_scorer:
-		potential_pity = config.increment
-		if potential_pity > config.threshold_pity:
-			intensities['Pity'] = potential_pity - config.threshold_pity
+		if neighbours[i].points < config.y:
+			potential_pity += config.increment
+
+	if potential_pity > config.threshold_pity:
+		intensities['Pity'] = potential_pity - config.threshold_pity
 
 	#return emotion with highest value
 	highest = max(intensities, key=intensities.get)
