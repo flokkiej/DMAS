@@ -10,7 +10,7 @@ class grid(object):
 		self.size = config.gridSize
 		self.status = ['C', 'D']
 		self.coopRate = [None] * config.epochs # Allocate space for performance
-		self.emotions = {'Joy': 0, 'Distress': 0}
+		self.emotions = {}
 
 		self.grid = [[0 for x in xrange(self.size)] for x in xrange(self.size)]
 		self.initGrid()
@@ -87,7 +87,7 @@ class grid(object):
 		# calculate the IPD and update plot for N epochs
 		for epoch in xrange(config.epochs):
 			print "\nEpoch: %d" % epoch
-			self.emotions = {'Joy': 0, 'Distress': 0, 'Anger': 0, 'Pity': 0, None: 0}
+			self.emotions = {'Joy': 0, 'Distress': 0, 'Anger': 0, 'Pity': 0, 'Threat': 0, 'Boredom': 0, None: 0}
 
 			# Calc number of cooperators
 			cooperators = [[self.getAgent((i,j)).status for j in xrange(self.size)] for i in xrange(self.size)]
@@ -99,7 +99,7 @@ class grid(object):
 				for j in xrange(self.size):
 					me = self.getAgent((i,j))
 					me.statusUpdate = None
-					me.emotion = None
+					#me.emotion = None
 					self.setAgent((i,j), me)
 
 			# Step 1: Calculate the scores for each agent
@@ -136,12 +136,39 @@ class grid(object):
 							me.statusUpdate = 'C'
 						elif me.emotion == 'Anger':
 							me.statusUpdate = 'D'
+						elif me.emotion == 'Threat':
+							me.coalition = True
+						elif me.emotion == 'Boredom':
+							me.coalition = False
 						self.setAgent((i,j), me)
 
-			# TODO
 			# Step 5: Update status based on group
 			if config.coalitions:
-				print "Coalitions may overrule your action now"
+				coalition_size = 0
+				n_c_vote = 0
+				n_d_vote = 0
+				for i in xrange(self.size):
+					for j in xrange(self.size):
+						me = self.getAgent((i,j))
+						if me.coalition:
+							coalition_size += 1
+							if me.status == 'C': n_c_vote += 1
+							else: n_d_vote += 1
+				if n_c_vote > n_d_vote:
+					for i in xrange(self.size):
+						for j in xrange(self.size):
+							me = self.getAgent((i,j))
+							if me.coalition:
+								me.statusUpdate = 'C'
+								self.setAgent((i,j),me)
+				else:
+					for i in xrange(self.size):
+						for j in xrange(self.size):
+							me = self.getAgent((i,j))
+							if me.coalition:
+								me.statusUpdate = 'D'
+								self.setAgent((i,j),me)
+				print "Coalition size: %d" % coalition_size
 
 			# Step 6: Update grid, Plot and Log
 			self.grid = newGrid
@@ -187,6 +214,11 @@ class grid(object):
 
 	# Play the prisoner's dilemma
 	def pd(self, me, opponent):
+		# Coalition members always cooperate among themselves
+		if config.coalitions:
+			if me.coalition and opponent.coalition:
+				return config.R
+
 		if me.status == 'C':
 			if opponent.status == 'C': return config.R
 			else: return config.S

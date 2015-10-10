@@ -2,7 +2,7 @@
 import agent, config, numpy
 
 def emotionize(me, neighbours):
-	intensities = {'Joy': 0, 'Distress': 0, 'Anger': 0, 'Pity': 0}
+	intensities = {'Joy': 0, 'Distress': 0, 'Anger': 0, 'Pity': 0, 'Threat': 0, 'Boredom': 0}
 
 	# Rule for Joy:
 	#	IF player has collected at least y points OR at least x neighbours are joyful
@@ -41,6 +41,30 @@ def emotionize(me, neighbours):
 
 	if potential_pity > config.threshold_pity:
 		intensities['Pity'] = potential_pity - config.threshold_pity
+
+	# Rule for Threat
+	#	IF at least x neighbours are identical in type of emotion AND type is different from its own
+	n_neighbours_threat = 0
+	for i in xrange(len(neighbours)):
+		if neighbours[i].status != me.status and neighbours[i].emotion == me.emotion and type(me.emotion) == str:
+			n_neighbours_threat += 1
+	if n_neighbours_threat > config.x:
+		potential_threat = config.increment
+		if potential_threat > config.threshold_threat:
+			intensities['Threat'] = potential_threat - config.threshold_threat
+
+	# Rule for Boredom
+	#	IF at least x neighbours are identical in type of emotion
+	n_neighbours_boring = 0
+	for i in xrange(len(neighbours)):
+		if neighbours[i].emotion == me.emotion and type(me.emotion) == str:
+			n_neighbours_boring += 1
+
+	if n_neighbours_boring > config.x:
+		potential_boredom = config.increment
+		if potential_boredom > config.threshold_boredom:
+			intensities['Boredom'] = potential_boredom - config.threshold_boredom
+
 
 	#return emotion with highest value
 	highest = max(intensities, key=intensities.get)
