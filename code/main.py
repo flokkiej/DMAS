@@ -11,7 +11,6 @@ def main():
 	g.simulate()
 	plt.ioff()
 	g.plotResults()
-	raw_input("Press a key to quit")
 
 if __name__ == "__main__":
 	main()

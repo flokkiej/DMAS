@@ -26,21 +26,6 @@ class agent(object):
 		# Get all permutations
 		neighbours = list(itertools.product(a2,b2))
 
-		# You're not your own neighbour, silly!
-		neighbours.remove(self.coords)
+		# You also play with yourself
+		#neighbours.remove(self.coords)
 		return neighbours
-
-	def getNeighbours(self):
-		return self.neighbours
-
-	def getStatus(self):
-		return self.status
-
-	def getEmotion(self):
-		return self.emotion
-
-	def getPoints(self):
-		return self.points
-
-	def getGroup(self):
-		return self.group
