@@ -177,6 +177,7 @@ class grid(object):
 					me = self.getAgent((i,j))
 					if not me.statusUpdate: pass
 					else: me.status = me.statusUpdate
+					me.emotion = None
 					self.setAgent((i,j), me)
 			if config.plot:
 				self.updatePlot(self.grid)
