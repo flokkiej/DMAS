@@ -98,7 +98,7 @@ class grid(object):
             cooperators = [[1 for x in cooperators for y in x if y == 'C']]
             nCooperators = np.sum(cooperators)
 
-            print np.sum([[self.getAgent((i, j)).emotionless for j in xrange(self.size)] for i in xrange(self.size)])
+            # print np.sum([[self.getAgent((i, j)).emotionless for j in xrange(self.size)] for i in xrange(self.size)])
 
             # Step 1: Calculate the scores for each agent
             for i in xrange(self.size):
@@ -223,8 +223,9 @@ class grid(object):
             if opponent.points > highest_points:
                 # print "%s got occupied to %s" % (me.status, opponent.status)
                 me.statusUpdate = opponent.status
-                me.emotionUpdate = opponent.emotion
-                me.emotionless = opponent.emotionless
+                if config.emotions:
+                    me.emotionUpdate = opponent.emotion
+                    me.emotionless = opponent.emotionless
                 me.coalition = opponent.coalition
                 highest_points = opponent.points
         return me

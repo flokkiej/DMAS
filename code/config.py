@@ -1,7 +1,7 @@
 # Global variables
-gridSize = 30
+gridSize = 50
 nAgents = gridSize * gridSize
-epochs = 100
+epochs = 300
 initialCoopRate = 0.75
 emotionsRate = 0.8
 
