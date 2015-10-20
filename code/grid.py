@@ -45,7 +45,7 @@ class grid(object):
         img = plt.imshow(colorGrid, interpolation='nearest', cmap=self.cmap, norm=self.norm)
 
         # make a color bar
-        plt.colorbar(img, cmap=self.cmap, norm=self.norm, boundaries=bounds, ticks=[-5, 0, 5])
+        # plt.colorbar(img, cmap=self.cmap, norm=self.norm, boundaries=bounds, ticks=[-5, 0, 5])
         plt.draw()
 
     # plt.show()
@@ -158,10 +158,13 @@ class grid(object):
                         me = self.getAgent((i, j))
                         if me.coalition:
                             coalition_size += 1
-                            if me.status == 'C':
+                            if me.statusUpdate == 'C':
                                 n_c_vote += 1
                             else:
                                 n_d_vote += 1
+
+                print "%d C Vote and %d D Vote" % (n_c_vote, n_d_vote)
+
                 if n_c_vote > n_d_vote:
                     for i in xrange(self.size):
                         for j in xrange(self.size):

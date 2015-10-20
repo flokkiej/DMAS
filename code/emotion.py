@@ -25,10 +25,10 @@ def emotionize(me, neighbours):
     # IF player has not collected at least y points AND opponent has defected
     # Each D neighbour contributes to potential_anger individually
     # This way, the more neighbours Deflect, the more potential is generated
-    if (me.points < config.y):
+    if me.points < config.y:
         potential_anger = 0
         for i in xrange(len(neighbours)):
-            if neighbours[i].status == 'D':
+            if neighbours[i].status == 'D' and (not me.coalition or not neighbours[i].coalition):
                 potential_anger += config.increment
         if potential_anger > config.threshold_anger:
             intensities['Anger'] = potential_anger - config.threshold_anger
