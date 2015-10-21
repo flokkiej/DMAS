@@ -1,5 +1,5 @@
 # Global variables
-gridSize = 2
+gridSize = 50
 nAgents = gridSize * gridSize
 epochs = 300
 initialCoopRate = 0.75
