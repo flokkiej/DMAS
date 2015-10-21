@@ -76,6 +76,8 @@ class grid(object):
         yspace = np.array(self.coopRate)
 
         print "Mean coop " + str(np.mean(yspace))
+        l = int(len(yspace))
+        print "Mean coop second half " + str(np.mean(yspace[int(0.5*l):]))
 
         with open("output.csv", "wb") as f:
             writer = csv.writer(f)
