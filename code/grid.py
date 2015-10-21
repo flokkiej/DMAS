@@ -94,9 +94,12 @@ class grid(object):
             self.emotions = {'Joy': 0, 'Distress': 0, 'Anger': 0, 'Pity': 0, 'Threat': 0, 'Boredom': 0, None: 0}
 
             # Calc number of cooperators
-            cooperators = [[self.getAgent((i, j)).status for j in xrange(self.size)] for i in xrange(self.size)]
-            cooperators = [[1 for x in cooperators for y in x if y == 'C']]
-            nCooperators = np.sum(cooperators)
+            nCooperators = 0
+            for i in xrange(self.size):
+                for j in xrange(self.size):
+                    me = self.getAgent((i, j))
+                    if me.status == 'C' or me.coalition == True:
+                        nCooperators += 1
 
             # print np.sum([[self.getAgent((i, j)).emotionless for j in xrange(self.size)] for i in xrange(self.size)])
 
@@ -225,7 +228,7 @@ class grid(object):
                 me.statusUpdate = opponent.status
                 if config.emotions:
                     me.emotionUpdate = opponent.emotion
-                    me.emotionless = opponent.emotionless
+                    # me.emotionless = opponent.emotionless
                 me.coalition = opponent.coalition
                 highest_points = opponent.points
         return me

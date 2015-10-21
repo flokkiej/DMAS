@@ -1,5 +1,5 @@
 # Global variables
-gridSize = 50
+gridSize = 2
 nAgents = gridSize * gridSize
 epochs = 300
 initialCoopRate = 0.75
@@ -7,7 +7,7 @@ emotionsRate = 0.8
 
 plot = False
 emotions = True
-coalitions = True
+coalitions = False
 
 # Local variables
 x = 3
