@@ -43,28 +43,29 @@ def emotionize(me, neighbours):
     if potential_pity > config.threshold_pity:
         intensities['Pity'] = potential_pity - config.threshold_pity
 
-    # Rule for Threat
-    # IF at least x neighbours are identical in type of emotion AND type is different from its own
-    n_neighbours_threat = 0
-    for i in xrange(len(neighbours)):
-        if neighbours[i].status != me.status and neighbours[i].emotion == me.emotion and type(me.emotion) == str:
-            n_neighbours_threat += 1
-    if n_neighbours_threat > config.x:
-        potential_threat = config.increment
-        if potential_threat > config.threshold_threat:
-            intensities['Threat'] = potential_threat - config.threshold_threat
+    if config.coalitions:
+        # Rule for Threat
+        # IF at least x neighbours are identical in type of emotion AND type is different from its own
+        n_neighbours_threat = 0
+        for i in xrange(len(neighbours)):
+            if neighbours[i].status != me.status and neighbours[i].emotion == me.emotion and type(me.emotion) == str:
+                n_neighbours_threat += 1
+        if n_neighbours_threat > config.x:
+            potential_threat = config.increment
+            if potential_threat > config.threshold_threat:
+                intensities['Threat'] = potential_threat - config.threshold_threat
 
-    # Rule for Boredom
-    # IF at least x neighbours are identical in type of emotion
-    n_neighbours_boring = 0
-    for i in xrange(len(neighbours)):
-        if neighbours[i].emotion == me.emotion and type(me.emotion) == str:
-            n_neighbours_boring += 1
+        # Rule for Boredom
+        # IF at least x neighbours are identical in type of emotion
+        n_neighbours_boring = 0
+        for i in xrange(len(neighbours)):
+            if neighbours[i].emotion == me.emotion and type(me.emotion) == str:
+                n_neighbours_boring += 1
 
-    if n_neighbours_boring > config.x:
-        potential_boredom = config.increment
-        if potential_boredom > config.threshold_boredom:
-            intensities['Boredom'] = potential_boredom - config.threshold_boredom
+        if n_neighbours_boring > config.x:
+            potential_boredom = config.increment
+            if potential_boredom > config.threshold_boredom:
+                intensities['Boredom'] = potential_boredom - config.threshold_boredom
 
     # return emotion with highest value
     highest = max(intensities, key=intensities.get)
