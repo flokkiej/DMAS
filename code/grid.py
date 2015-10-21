@@ -83,6 +83,7 @@ class grid(object):
                 writer.writerow([val])
 
         plt.plot(xspace, yspace)
+        plt.ylim((0, 0.8))
         plt.draw()
         plt.savefig('results_emotion.pdf')
         plt.show()
