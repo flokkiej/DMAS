@@ -1,11 +1,10 @@
 import random
+import csv
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-import time
 import numpy as np
+import emotion
 from agent import *
-
-pd_payoff = [[(3,3), (5,0)], [(0,5), (1,1)]]
 
 
 class grid(object):
@@ -32,7 +31,7 @@ class grid(object):
 		# fills grid with agents
 		for i in xrange(self.size):
 			for j in xrange(self.size):
-				#create agents with a random color(emo) and give him his location (x,y)				
+				#create agents with a random color(emo) and give him his location (x,y)
 				randI = random.randint(0, len(self.color)-1)
 				self.grid[i][j] = agent(self.color[randI], (i,j))
 	def printGrid(self):
@@ -47,7 +46,7 @@ class grid(object):
 		for i in xrange(self.size):
 			for j in xrange(self.size):
 				colorGrid[i][j] = self.grid[i][j].color
-		
+
 		cGrid = colorGrid
 
 		fig = plt.figure(1,(7,7))
@@ -67,7 +66,7 @@ class grid(object):
 		for i in xrange(self.size):
 			for j in xrange(self.size):
 				colorGrid[i][j] = self.grid[i][j].color
-		
+
 		img = plt.imshow(colorGrid, interpolation = 'nearest', cmap = self.cmap, norm = self.norm)
 		plt.draw()
 		#plt.savefig('sim.pdf')
@@ -117,7 +116,7 @@ class grid(object):
 		#give agent predominent color
 		length = len(me.hist)
 		c = sum(me.hist)
-		# sum is amount of defectors. 
+		# sum is amount of defectors.
 		if c < (length/2):
 			me.color = 10
 		else:
@@ -132,7 +131,7 @@ class grid(object):
 		act2 = opponent.action
 		(me_score, opp_score) = pd_payoff[act1][act2]
 
-		
+
 		me.points = me_score
 		opponent.points = opp_score
 		me.hist.append(me.action)
@@ -142,7 +141,7 @@ class grid(object):
 		#me.color = me.points
 		opponent.action = swp
 		#opponent.color = opponent.points
-		
+
 		if me.action == 0 and opponent.action == 0:
 			self.cooprate = self.cooprate +1
 		self.Nactions = self.Nactions +1

@@ -1,22 +1,18 @@
 #!/usr/bin/python
-import sys
-import numpy as np
-import random
-
-import emotion, grid
-from grid import *
+#
+# The main program, initializes the grid and initiates the game
+# By Stefan Bussemaker, Folkert de Vries, Sybren R\"omer
+import grid
+import matplotlib.pyplot as plt
 
 
 def main():
-	gridSize = int(sys.argv[1]) if len(sys.argv)>1 else 15
-	g = grid(gridSize)
-	g.fillGrid()
-	plt.ion()
-	g.plotGrid()
-	g.plotRate()
-	g.simulate(50)
-	plt.ioff()
-	return
+    g = grid.grid()
+    plt.ion()
+    g.simulate()
+    plt.ioff()
+    g.plotResults()
+
 
 if __name__ == "__main__":
-	main()
+    main()
